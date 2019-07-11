@@ -2,10 +2,16 @@ import numpy as np
 import pandas as pd
 import settings
 import stock_info
+from scraper import scrape_tables
 
 
 def CAGR(start_value, end_value, years=settings.FISCAL_YEARS):   
     return ((end_value - start_value + np.abs(start_value))/np.abs(start_value))**(1/years)-1
+
+def get_annual_growth(symbol):
+    url = 'https://www.nasdaq.com/symbol/' + symbol + '/earnings-growth'
+    df = scrape_tables(url).fillna('')
+    df.to_csv('test.csv')
 
 def get_future_value():
     df_income_statement = stock_info.df_income_statement
@@ -20,7 +26,7 @@ def get_future_value():
     if np.isnan(annual_growth_rate):
         pass
     else:
-        df_future_value['Annual Growth Rate'] = annual_growth_rate
+        df_future_value['Annual Growth Rate'] = 0.3 if annual_growth_rate > 3.0 else annual_growth_rate # max 30% growth
         df_future_value['Last EPS'] = eps[-1]
         df_future_value['Future EPS (+5 Years)'] = abs(np.fv(df_future_value['Annual Growth Rate'],settings.TARGET_YEARS, 0, df_future_value['Last EPS']))
         df_future_value['MEAN PE'] = get_mean_pe_ratio(eps.values)
@@ -37,7 +43,10 @@ def get_mean_pe_ratio(eps):
     df_price_history = stock_info.df_price_history
     df_price_history['Year'] = pd.DatetimeIndex(df_price_history.index).year
     df_min_pe_ratio = df_price_history.groupby('Year').tail(1).set_index('Year')[:settings.FISCAL_YEARS]
+
     df_min_pe_ratio['PE'] = df_min_pe_ratio['Adj Close'] / eps
     return None if df_min_pe_ratio['PE'].mean() < 0 else df_min_pe_ratio['PE'].mean()
+
+
 
 

@@ -27,6 +27,7 @@ def get_my_stocks():
     stocks.append({'value':'lyft', 'label': 'Lyft'})
     stocks.append({'value':'uber', 'label': 'Uber'})
     stocks.append({'value':'work', 'label': 'Slack'})
+    stocks.append({'value':'splk', 'label': 'Splunk Inc'})
     return stocks
 
 def combine_stock_list():

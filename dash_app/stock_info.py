@@ -55,3 +55,5 @@ def combine_financial_reports():
 
 
 
+# get_stock_info('AMZN')
+# print(get_year_end_adj_close())
